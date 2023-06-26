@@ -105,6 +105,7 @@ dat %>% select(sex,cp,ca,thal,restecg,slope,exang,fbs,target) %>%
 pred <- as.factor(ifelse(dat$sex==1,1,0))
 confusionMatrix(pred,as.factor(dat$target))
 ```
+
 ```{r}
 set.seed(2022)
 split <- sample(1:nrow(dat), as.integer(0.7*nrow(dat)), F)
@@ -112,6 +113,7 @@ split <- sample(1:nrow(dat), as.integer(0.7*nrow(dat)), F)
 train <- dat[split,]
 test <- dat[-split,]
 ```
+
 ## preprocessing
 
 ```{r}

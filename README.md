@@ -7,6 +7,7 @@ Getting back to `R` after 2 year break, brushing up skills and picking up new th
 - keep exploring `R`
 - explore `.R` & `.Rmd` in `VScode` & `Rstudio`
 - git branching and merging
+  - get a specific file from another branch
 
 ___
 # Disclaimer 
