@@ -35,9 +35,115 @@ print(dat$target)
 ```
 
 ```{r}
+dat %>% distinct(target) %>% arrange(target) %>% pull()
+```
+
+```{r}
+sapply(dat, function(x) table(is.na(x)))
+dat <- drop_na(dat)
+table(duplicated(dat))
+dat <- dat[!duplicated(dat),]
+```
+
+```{r}
 dat %>% gather() %>%
   ggplot(aes(x=value)) + 
   geom_histogram(fill="steelblue", alpha=.7) +
   theme_minimal() +
   facet_wrap(~key, scales="free")
+```
+
+```{r}
+cormat <- cor(dat %>% keep(is.numeric))
+
+cormat %>% as.data.frame %>% mutate(var2=rownames(.)) %>%
+  pivot_longer(!var2, values_to = "value") %>%
+  ggplot(aes(x=name,y=var2,fill=abs(value),label=round(value,2))) +
+  geom_tile() + geom_label() + xlab("") + ylab("") +
+  ggtitle("Correlation matrix of our predictors") +
+  labs(fill="Correlation\n(absolute):")
+```
+
+```{r}
+# install.packages("viridis")  # Install
+library("viridis") 
+library(RColorBrewer)
+# display.brewer.all()
+# install.packages("wesanderson")  # Install
+library(wesanderson)
+names(wes_palettes)
+
+```
+
+```{r}
+dat %>% select(-c(sex,cp,ca,thal,restecg,slope,exang,fbs)) %>%
+  pivot_longer(!target, values_to = "value") %>%
+  ggplot(aes(x=factor(target), y=value, fill=factor(target))) +
+  geom_boxplot(outlier.shape = NA) + geom_jitter(size=.7, width=.1, alpha=.5) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(fill="Heart disease:") +
+  theme_minimal() +
+  facet_wrap(~name, scales="free")
+```
+
+```{r}
+dat %>% select(sex,cp,ca,thal,restecg,slope,exang,fbs,target) %>% 
+  pivot_longer(!target, values_to = "value") %>%
+  ggplot(aes(x=factor(value), fill=factor(target))) +
+  scale_fill_manual(values = wes_palette("Royal2", n = 5)) +
+  geom_bar(position="fill", alpha=.7)+
+  theme_minimal() +
+  labs(fill="Heart disease:") +
+  facet_wrap(~name, scales="free")
+```
+
+# ML
+
+## Split
+
+```{r}
+pred <- as.factor(ifelse(dat$sex==1,1,0))
+confusionMatrix(pred,as.factor(dat$target))
+```
+```{r}
+set.seed(2022)
+split <- sample(1:nrow(dat), as.integer(0.7*nrow(dat)), F)
+
+train <- dat[split,]
+test <- dat[-split,]
+```
+## preprocessing
+
+```{r}
+preprocess_data <- function(df){
+  
+  #ROutliers are assigned the modal value
+  df <- df %>% mutate(restecg = recode(restecg, `2`=1L),
+                      thal = recode(thal, `0`=2L),
+                      ca = recode(ca, `4`=0L))
+  
+  #Nominal variables
+  nomvars <- c("cp", "ca", "thal", "restecg", "slope")
+  df[,names(df) %in% nomvars] <- sapply(df[,names(df) %in% nomvars], as.character)
+  dummies <- dummyVars(~ ., df)
+  df <- predict(dummies, newdata = df) %>% as.data.frame
+  
+  #Age-standardized variables
+  df$hr_age <- df$thalach / df$age
+  df$chol_age <- df$chol / df$age
+
+  
+  #Oldpeak: Is there any ST depression
+  df$st <- ifelse(df$oldpeak>0,1,0)
+  
+  return(df[,names(df)!="target"])
+}
+```
+
+```{r}
+x_train <- preprocess_data(train)
+x_test <- preprocess_data(test)
+
+# y_train <- factor(train[,"target"], levels=c(1,0))
+# y_test <- factor(test[,"target"], levels=c(1,0))
 ```
