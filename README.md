@@ -6,6 +6,7 @@ Getting back to `R` after 2 year break, brushing up skills and picking up new th
 - keep working on `tidyverse` & it's quarks
 - keep exploring `R`
 - explore `.R` & `.Rmd` in `VScode` & `Rstudio`
+- git branching and merging
 
 ___
 # Disclaimer 
