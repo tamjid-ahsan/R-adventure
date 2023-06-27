@@ -44,8 +44,9 @@ heart_disease_dataset %>%
   drop_na() %>%
   group_by(Diagnosis_Heart_Disease) %>%
   count() %>% 
-  ungroup() %>%
-  kable(align = rep("c", 2)) %>% kable_styling("full_width" = F)
+  ungroup() 
+# %>%
+  # kable(align = rep("c", 2)) %>% kable_styling("full_width" = F)
 ```
 
 ```{r}
@@ -54,8 +55,9 @@ heart_disease_dataset %>%
   drop_na() %>%
   group_by(Thalassemia) %>%
   count() %>% 
-  ungroup() %>%
-  kable(align = rep("c", 2)) %>% kable_styling("full_width" = F)
+  ungroup() 
+# %>%
+#   kable(align = rep("c", 2)) %>% kable_styling("full_width" = F)
 ```
 
 ```{r}
@@ -184,7 +186,7 @@ heart_dataset_clean_tbl %>% ggcorr(high       = "#20a486ff",
                                    label      = TRUE, 
                                    hjust      = .75, 
                                    size       = 3, 
-                                   label_size = 3,
+                                   label_size = 2.5,
                                    nbreaks    = 5
                                               ) +
   labs(title = "Correlation Matrix",
@@ -378,7 +380,8 @@ cv_predictions_tbl <- map2_df(.x = hd_cv_split_objects$splits,
                               ~make_cv_predictions_fcn(split = .x, id = .y))
 
 #see results 
-cv_predictions_tbl %>% head(10) %>% kable(align = rep("c", 3))
+cv_predictions_tbl %>% head(10) 
+# %>% kable(align = rep("c", 3))
 ```
 
 ```{r}
@@ -396,7 +399,8 @@ cv_metrics_long_tbl <- cv_predictions_tbl %>%
                        desired_metrics(truth = truth, estimate = prediction) 
 
 #see results
-cv_metrics_long_tbl %>% head(10) %>% kable(align = rep("c", 4))
+cv_metrics_long_tbl %>% head(10)
+# %>% kable(align = rep("c", 4))
 ```
 
 ```{r}
@@ -427,8 +431,9 @@ cv_mean_metrics_tbl <- cv_metrics_long_tbl %>%
 cv_mean_metrics_tbl %>% 
   mutate(Average = Avg %>% signif(digits = 3)) %>% 
   select(.metric,
-         Average) %>%
-  kable(align = rep("c", 2))
+         Average) 
+#%>%
+  #kable(align = rep("c", 2))
 ```
 
 # Source
